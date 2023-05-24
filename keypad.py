@@ -1,6 +1,11 @@
 # import required libraries
 import RPi.GPIO as GPIO
 import time
+from signal import signal, SIGTERM, SIGHUP, pause
+from rpi_lcd import LCD
+#LCD COMMANDS FROM THE KEYPAD
+password = "APMS123"
+lcd = LCD()
 
 # these GPIO pins are connected to the keypad
 # change these according to your connections!
@@ -34,6 +39,30 @@ GPIO.setup(C4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 # and then checks each column for changes
 # If it detects a change, the user pressed the button that connects the given line
 # to the detected column
+def safe_exit(signum, frame):
+    exit(1)
+def print_to_lcd(value):
+    try:
+        signal(SIGTERM, safe_exit)
+        signal(SIGHUP, safe_exit)
+        lcd.text(value, 1)
+        pause()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        lcd.clear()
+def get_password():
+    password = ""
+    while True:
+        input_key = None
+        while input_key is None:
+            input_key = readLine(L2, ["4", "5", "6", "B"])
+        if input_key == "#":
+            break
+        password += input_key
+        print_to_lcd("*" * len(password))
+        time.sleep(0.2)
+    return password
 
 def readLine(line, characters):
     GPIO.output(line, GPIO.HIGH)
@@ -43,8 +72,10 @@ def readLine(line, characters):
         print(characters[1])
     if(GPIO.input(C3) == 1):
         print(characters[2])
+        print_to_lcd(characters[2])
     if(GPIO.input(C4) == 1):
         print(characters[3])
+        
     GPIO.output(line, GPIO.LOW)
 
 try:
@@ -55,5 +86,7 @@ try:
         readLine(L3, ["7","8","9","C"])
         readLine(L4, ["*","0","#","D"])
         time.sleep(0.1)
+        lcd.text("Enter Password", 1)
+        get_password()
 except KeyboardInterrupt:
-    print("\nApplication stopped!")
+    print("\nApplication stopped!")    

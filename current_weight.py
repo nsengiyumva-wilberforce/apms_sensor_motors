@@ -14,7 +14,7 @@ if not EMULATE_HX711:
 else:
     from emulated_hx711 import HX711
     
-url = 'https://apms-production.up.railway.app/api/feed/'
+url = 'https://apms-production.up.railway.app/api/feed/current/1'
 
 def cleanAndExit():
     print("Cleaning...")
@@ -64,11 +64,11 @@ while True:
         # binary_string = hx.get_binary_string()
         # print binary_string + " " + np_arr8_string
         
-        # Prints the weight. Comment if you're debbuging the MSB and LSB issue.
+        # Prints the weight. Comment if you're debbuging the MSB and LSB issue.        
         weight = hx.get_weight(5)
         myobj = {'feedLevelReading': weight, 'systemId': 'W001'}
         print('Weight={0:0.1f}'.format(weight))
-        x = requests.post(url, json = myobj)
+        x = requests.put(url, json = myobj)
         print(x.text)
 
         # To get weight from both channels (if you have load cells hooked up 
@@ -83,4 +83,5 @@ while True:
 
     except (KeyboardInterrupt, SystemExit):
         cleanAndExit()
+
 
