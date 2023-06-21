@@ -83,4 +83,3 @@ while True:
 
     except (KeyboardInterrupt, SystemExit):
         cleanAndExit()
-

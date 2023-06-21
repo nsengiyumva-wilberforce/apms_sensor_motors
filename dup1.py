@@ -23,7 +23,7 @@ if not EMULATE_HX711:
 else:
     from emulated_hx711 import HX711
     
-url = 'https://apms-production.up.railway.app/api/feed/'
+url = 'https://apms-production.up.railway.app/api/feed/current/1'
 
 def cleanAndExit():
     print("Cleaning...")
@@ -62,8 +62,7 @@ print("Monitoring Weight! Add weight now...")
 # to use both channels, you'll need to tare them both
 #hx.tare_A()
 #hx.tare_B()
-
-def get_feed_value():
+while True:
     try:
         # These three lines are usefull to debug wether to use MSB or LSB in the reading formats
         # for the first parameter of "hx.set_reading_format("LSB", "MSB")".
@@ -75,11 +74,10 @@ def get_feed_value():
         
         # Prints the weight. Comment if you're debbuging the MSB and LSB issue.
         weight = hx.get_weight(5)
-        return weight
         myobj = {'feedLevelReading': weight, 'systemId': 'W001'}
         print('Weight={0:0.1f}'.format(weight))
-        #x = requests.post(url, json = myobj)
-        #print(x.text)
+        x = requests.put(url, json = myobj)
+        print(x.text)
 
         # To get weight from both channels (if you have load cells hooked up 
         # to both channel A and B), do something like this

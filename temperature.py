@@ -23,12 +23,14 @@ gpio=17
 # Reading the DHT11 is very sensitive to timings and occasionally
 # the Pi might fail to get a valid reading. So check if readings are valid.
 
-humidity, temperature = Adafruit_DHT.read_retry(sensor, gpio)
-    
-if humidity is not None and temperature is not None:
-    myobj = {'temperatureReading': temperature, 'systemId': 'U001'}
-    print('Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(temperature, humidity))
-    x = requests.post(url, json = myobj)
-    print(x.text)       
-else:
-    print('Failed to get reading. Try again!')
+
+
+while True:
+    humidity, temperature = Adafruit_DHT.read_retry(sensor, gpio)
+    if humidity is not None and temperature is not None:
+        myobj = {'temperatureReading': temperature, 'systemId': 'U001'}
+        print('Temp={0:0.1f}*C  Humidity={1:0.1f}%'.format(temperature, humidity))
+        x = requests.post(url, json = myobj)
+        print(x.text)       
+    else:
+        print('Failed to get reading. Try again!')

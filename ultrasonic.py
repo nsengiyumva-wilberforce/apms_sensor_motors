@@ -1,10 +1,13 @@
 #Libraries
 import RPi.GPIO as GPIO
 import time
+import camera
  
 #GPIO Mode (BOARD / BCM)
+gpio=10
 GPIO.setmode(GPIO.BCM)
- 
+#GPIO.setup(gpio, GPIO.OUT)
+#GPIO.output(gpio, GPIO.HIGH)
 #set GPIO Pins
 GPIO_TRIGGER = 18
 GPIO_ECHO = 24
@@ -44,6 +47,9 @@ if __name__ == '__main__':
     try:
         while True:
             dist = distance()
+            if( dist < 100):
+                print("Intruder detected")
+                camera.capture_intruder()
             print ("Measured Distance = %.1f cm" % dist)
             time.sleep(1)
  
